@@ -1,0 +1,13 @@
+[project]
+name = "mcp-financial-analyst"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "crewai>=1.8.0",
+    "crewai-tools>=1.8.0",
+    "fastmcp>=2.12.5",
+    "pydantic>=2.11.10",
+    "python-dotenv>=1.1.1",
+]
