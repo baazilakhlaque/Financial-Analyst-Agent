@@ -83,7 +83,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync
 ```
 
-# Or using traditional pip
+Or using traditional pip
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
@@ -136,13 +136,12 @@ After updating `mcp.json`, **restart Cursor** for changes to take effect.
 The AI assistant will use the MCP tools (`analyze_stock`, `save_code`, `execute_code`) automatically.
 
 ### Command Line Testing
+Using uv (recommended)
 
-# Using uv (recommended)
 ```bash
 uv run python financial_analyst_agent.py
 ```
-
-# Or with activated venv
+Or with activated venv
 ```bash
 source .venv/bin/activate
 python financial_analyst_agent.py
