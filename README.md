@@ -1,6 +1,6 @@
 # Financial Analyst Agent
 
-An intelligent multi-agent system that automates stock market analysis and visualization using natural language queries. Built with CrewAI and integrated via Model Context Protocol (MCP) for seamless AI assistant integration.
+An intelligent multi-agent system that automates stock market analysis, visualization and cloud storage using natural language queries. Built with CrewAI & AWS and integrated via Model Context Protocol (MCP) for seamless AI assistant integration.
 
 ## Problem
 
@@ -31,13 +31,14 @@ This project automates the entire stock analysis workflow using a **multi-agent 
 - **Code Generation & Execution**: Creates and runs Python code automatically
 - **Error Recovery**: Agents fix code errors automatically
 - **MCP Integration**: Works with Cursor, Claude Desktop, and other MCP-compatible tools
-
+- **AWS S3 Integration**: Automatically uploads generated charts to cloud storage
 
 ## Tech Stack
 - **CrewAI**: Multi-agent orchestration 
 - **OpenAI GPT-4o-mini**: Natural language understanding & code
 - **FastMCP**: Fast Model Context Protocol framework for building MCP servers
 - **Pydantic**: Type-safe query parsing 
+- **AWS S3**: Cloud storage for generated visualizations
 
 ### Key Dependencies
 
@@ -46,11 +47,13 @@ This project automates the entire stock analysis workflow using a **multi-agent 
 - `fastmcp>=2.12.5` - MCP server framework
 - `pydantic>=2.11.10` - Data validation
 - `python-dotenv>=1.1.1` - Environment management
+- `boto3>=1.34.0` - AWS SDK for S3 uploads
 
 ## Prerequisites
 
 - **Python 3.12+**
 - **uv** (recommended) or `pip` and `venv`
+- **AWS Account** with S3 access ([Create one here](https://aws.amazon.com/))
 - **OpenAI API Key** ([Get one here](https://platform.openai.com/api-keys))
 - **Cursor** or another MCP-compatible client (optional, for integration)
 
@@ -97,6 +100,10 @@ Create a `.env` file in the project root:
 ```env 
 # Required
 OPENAI_API_KEY=your_openai_api_key_here
+AWS_ACCESS_KEY_ID=your_aws_access_key_id
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET_NAME=your-bucket-name
 ```
 
 ## Configuration
@@ -122,6 +129,31 @@ Add to your `~/.cursor/mcp.json`:
 ```
 
 After updating `mcp.json`, **restart Cursor** for changes to take effect.
+
+### AWS S3 Setup
+
+#### 1. Create an S3 Bucket
+
+1. Go to [AWS S3 Console](https://console.aws.amazon.com/s3/)
+2. Click "Create bucket"
+3. Name your bucket (e.g., `financial-analyst-plots`)
+4. Select your region
+5. Keep default settings and create
+
+#### 2. Create IAM User with S3 Access
+
+1. Go to [AWS IAM Console](https://console.aws.amazon.com/iam/)
+2. Users → Create user
+3. Attach policy: `AmazonS3FullAccess` (or a custom policy for least privilege)
+4. Create access key (Application running outside AWS)
+5. Copy **Access Key ID** and **Secret Access Key**
+
+#### 3. Add Credentials to .env
+
+AWS_ACCESS_KEY_ID=AKIA...
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET_NAME=financial-analyst-plots
 
 ## Usage
 

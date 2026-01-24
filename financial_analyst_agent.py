@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 from crewai_tools import CodeInterpreterTool, FileReadTool
 from crewai.process import Process
 
+import glob
+import os
+
 load_dotenv()
 
 llm = LLM(model="gpt-4o-mini", temperature=0.6)
@@ -39,7 +42,8 @@ code_writing_agent = Agent(
 )
 
 code_writing_task = Task(
-    description='Write a python code to visualize the stock data, based on the inputs of stock analyst, where you will find stock symbol, timeframe and action to be performed.',
+    description='''Write a python code to visualize the stock data, based on the inputs of stock analyst, 
+    where you will find stock symbol, timeframe and action to be performed.''',
     agent=code_writing_agent,
     expected_output="A clean and executable python script file (.py) that will be used to visualize the stock data.",
     llm=llm
@@ -63,6 +67,7 @@ code_executing_task = Task(
     llm=llm
 )
 
+
 def run_financial_analysis(query: str):
     crew = Crew(
         agents=[query_parser_agent, code_writing_agent, code_executing_agent],
@@ -70,10 +75,11 @@ def run_financial_analysis(query: str):
         process=Process.sequential,
     )
     result = crew.kickoff(inputs={"query": query})
+
     return result.raw
 
 if __name__ == "__main__":
-    query = "Plot YTD stock gain of Tesla"
+    query = "Plot YTD stock gain of Google"
     result = run_financial_analysis(query)
     print(result)
 
