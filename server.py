@@ -1,5 +1,8 @@
 from fastmcp import FastMCP
 from financial_analyst_agent import run_financial_analysis
+from s3_storage import S3Storage
+import glob
+import os
 
 
 mcp = FastMCP("financial-analyst-agent")
@@ -58,6 +61,7 @@ def execute_code() -> str:
     """
     Executes the python code saved in the 'stock_analysis.py' file.
     Returns the output of the code execution.
+    Automatically uploads the generated PNG file to S3.
 
     Args:
         None
@@ -66,11 +70,50 @@ def execute_code() -> str:
         str: The output of the code execution.
     
     """
+    import time
+    import matplotlib
+    import subprocess
+
+    matplotlib.use('Agg')
+    
+    # Capture existing PNG files before execution
+    existing_plots = set(glob.glob("*.png"))
+    print(f"Existing plots: {existing_plots}")
+    
     try:
         with open("stock_analysis.py", "r") as f:
-            exec(f.read())
+            #exec(f.read())
+            code = f.read()
+        
+        exec(code)
+
+        time.sleep(0.5)
+        
+        # Check for new PNG files
+        all_plots = set(glob.glob("*.png"))
+        new_plots = all_plots - existing_plots
+        print(f"All plots now: {all_plots}")
+        print(f"New plots: {new_plots}")
+        
+        # Upload to S3
+        s3_urls = []
+        if new_plots:
+            try:
+                storage = S3Storage()
+                for plot_path in new_plots:
+                    print(f"Uploading {plot_path}")
+                    s3_url = storage.upload_file(plot_path)
+                    s3_urls.append(f"- {os.path.basename(plot_path)}: {s3_url}")
+
+                    subprocess.run(['open', plot_path])
+                
+                return "Code executed successfully\n\n **Plots uploaded to S3:**\n" + "\n".join(s3_urls)
+            except Exception as e:
+                print(f"S3 upload error: {e}")
+                return f"Code executed successfully, but S3 upload failed: {e}"
         return "Code executed successfully"
     except Exception as e:
+        print(f"Execution error: {e}")
         return f"Error: {e}"
 
 
